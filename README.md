@@ -4,7 +4,7 @@ IoTClient
 
 ## English | [中文文档](README-zh_CN.md)
 
-[![image](https://img.shields.io/nuget/v/IoTClient.svg)](https://www.nuget.org/packages/IoTClient.AOT/) [![image](https://img.shields.io/nuget/dt/IoTClient.svg)](https://www.nuget.org/packages/IoTClient.AOT/) ![image](https://img.shields.io/github/license/alienwow/SnowLeopard.svg)
+[![image](https://img.shields.io/nuget/v/IoTClient.AOT.svg)](https://www.nuget.org/packages/IoTClient.AOT/) [![image](https://img.shields.io/nuget/dt/IoTClient.AOT.svg)](https://www.nuget.org/packages/IoTClient.AOT/) ![image](https://img.shields.io/github/license/alienwow/SnowLeopard.svg)
 
 - This is an IoT device communication protocol realization client, which will include mainstream PLC communication reading, ModBus protocol, Bacnet protocol and other common industrial communication protocols.
 - This component is based on .NET Standard 2.0 and can be used for cross-platform development of .Net, such as Windows, Linux and even run on Raspberry Pi.
