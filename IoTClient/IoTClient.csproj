@@ -2,7 +2,8 @@
 
   <PropertyGroup>
 
-    <Description>这是（农码一生 - benny）IotClient库的AOT版本，支持.net10
+    <Description>这是（农码一生 - benny）IotClient库的AOT版本分支，支持.net10
+原作者 农码一生 - benny
 
 这是一个物联网设备通讯协议实现客户端，将会包括主流PLC通信读取、Modbus协议、Bacnet协议等常用工业通讯协议。本组件终身开源免费，采用最宽松的MIT开源协议，您可以随意修改和商业使用（商业使用请做好评估和测试）。
 </Description>
@@ -13,7 +14,7 @@
     <Product>物联网设备通讯协议实现</Product>
     <Copyright>Copyright (c) 2026 低俗小说</Copyright>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl></RepositoryUrl>
+    <RepositoryUrl>https://github.com/PulpFiction-Jeson/IoTClient.git</RepositoryUrl>
     <PackageTags>Modbus,Bacnet,PLC,S7,ModbusTcp,三菱,西门子,欧姆龙,IoT,物联网,边缘计算</PackageTags>
     <PackageIconUrl>https://user-images.githubusercontent.com/5820324/66972725-12bccf80-f0c8-11e9-9468-3cfc57915dc9.png</PackageIconUrl>
     <TargetFramework>net10.0</TargetFramework>
@@ -33,8 +34,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Clients\Bacnet\**" />
     <Compile Remove="IoTClient\**" />
+    <EmbeddedResource Remove="Clients\Bacnet\**" />
     <EmbeddedResource Remove="IoTClient\**" />
+    <None Remove="Clients\Bacnet\**" />
     <None Remove="IoTClient\**" />
   </ItemGroup>
 
@@ -43,10 +47,6 @@
     <Compile Remove="Clients\PLC\Models\MitsubishiA1Type.cs" />
     <Compile Remove="Clients\PLC\Models\MitsubishiMCType.cs" />
     <Compile Remove="Clients\PLC\Models\MitsubishiMCWrite.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Clients\Bacnet\" />
   </ItemGroup>
 
   <ItemGroup>
