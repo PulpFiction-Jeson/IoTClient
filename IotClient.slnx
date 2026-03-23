@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="IoTClient/IoTClient.csproj" />
+  <Project Path="test/test.csproj" />
+</Solution>
