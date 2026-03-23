@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\IoTClient\IoTClient.csproj" />
+    <ProjectReference Include="..\IoTClient\IoTClient.AOT.csproj" />
   </ItemGroup>
 
 </Project>
