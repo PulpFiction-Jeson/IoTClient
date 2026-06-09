@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace IoTClient.Common.Helpers
 {
@@ -29,31 +29,31 @@ namespace IoTClient.Common.Helpers
             switch (errCode)
             {
                 case 0x01:
-                    err = $"异常码{errCode}：⾮法功能";
+                    err = $"异常码[{errCode}]：⾮法功能";
                     break;
                 case 0x02:
-                    err = $"异常码{errCode}：⾮法数据地址";
+                    err = $"异常码[{errCode}]：⾮法数据地址";
                     break;
                 case 0x03:
-                    err = $"异常码{errCode}：⾮法数据值";
+                    err = $"异常码[{errCode}]：⾮法数据值";
                     break;
                 case 0x04:
-                    err = $"异常码{errCode}：从站设备故障";
+                    err = $"异常码[{errCode}]：从站设备故障";
                     break;
                 case 0x05:
-                    err = $"异常码{errCode}：确认";
+                    err = $"异常码[{errCode}]：确认";
                     break;
                 case 0x06:
-                    err = $"异常码{errCode}：从属设备忙";
+                    err = $"异常码[{errCode}]：从属设备忙";
                     break;
                 case 0x08:
-                    err = $"异常码{errCode}：存储奇偶性差错";
+                    err = $"异常码[{errCode}]：存储奇偶性差错";
                     break;
                 case 0x0A:
-                    err = $"异常码{errCode}：不可⽤⽹关路径";
+                    err = $"异常码[{errCode}]：不可⽤⽹关路径";
                     break;
                 case 0x0B:
-                    err = $"异常码{errCode}：⽹关⽬标设备响应失败";
+                    err = $"异常码[{errCode}]：⽹关⽬标设备响应失败";
                     break;
             }
             return err;

@@ -32,8 +32,7 @@ namespace IoTClient.Clients.Modbus
         /// <param name="ipAndPoint"></param>
         /// <param name="timeout">超时时间（毫秒）</param>
         /// <param name="format">大小端设置</param>
-        /// <param name="plcAddresses">PLC地址</param>
-        /// <param name="plcAddresses">PLC地址</param>
+        /// <param name="plcAddresses">PLC地址</param>        
         public ModbusTcpClient(IPEndPoint ipAndPoint, int timeout = 1500, EndianFormat format = EndianFormat.ABCD, bool plcAddresses = false)
         {
             this.timeout = timeout;
@@ -150,7 +149,7 @@ namespace IoTClient.Clients.Modbus
                 var conentResult = Connect();
                 if (!conentResult.IsSucceed)
                 {
-                    conentResult.Err = $"读取 地址:{address} 站号:{stationNumber} 功能码:{functionCode} 失败。{ conentResult.Err}";
+                    conentResult.Err = $"读取 站号:{stationNumber} 地址:{address} 功能码:{functionCode} 失败。{conentResult.Err}";
                     return result.SetErrInfo(conentResult);
                 }
             }
@@ -164,7 +163,7 @@ namespace IoTClient.Clients.Modbus
                 var sendResult = SendPackageReliable(command);
                 if (!sendResult.IsSucceed)
                 {
-                    sendResult.Err = $"读取 地址:{address} 站号:{stationNumber} 功能码:{functionCode} 失败。{ sendResult.Err}";
+                    sendResult.Err = $"读取 站号:{stationNumber} 地址:{address} 功能码:{functionCode} 失败。{sendResult.Err}";
                     return result.SetErrInfo(sendResult).EndTime();
                 }
                 var dataPackage = sendResult.Value;
@@ -180,13 +179,13 @@ namespace IoTClient.Clients.Modbus
                 if (chenkHead[0] != dataPackage[0] || chenkHead[1] != dataPackage[1])
                 {
                     result.IsSucceed = false;
-                    result.Err = $"读取 地址:{address} 站号:{stationNumber} 功能码:{functionCode} 失败。响应结果校验失败";
+                    result.Err = $"读取 站号:{stationNumber} 地址:{address} 功能码:{functionCode} 失败。响应结果校验失败";
                     socket?.SafeClose();
                 }
                 else if (ModbusHelper.VerifyFunctionCode(functionCode, dataPackage[7]))
                 {
                     result.IsSucceed = false;
-                    result.Err = ModbusHelper.ErrMsg(dataPackage[8]);
+                    result.Err = $"读取 站号:{stationNumber} 地址:{address} 功能码:{functionCode} 失败。{ModbusHelper.ErrMsg(dataPackage[8])}。";
                 }
             }
             catch (SocketException ex)
@@ -194,12 +193,12 @@ namespace IoTClient.Clients.Modbus
                 result.IsSucceed = false;
                 if (ex.SocketErrorCode == SocketError.TimedOut)
                 {
-                    result.Err = $"读取 地址:{address} 站号:{stationNumber} 功能码:{functionCode} 失败。连接超时";
+                    result.Err = $"读取 站号:{stationNumber} 地址:{address} 功能码:{functionCode} 失败。连接超时";
                     socket?.SafeClose();
                 }
                 else
                 {
-                    result.Err = $"读取 地址:{address} 站号:{stationNumber} 功能码:{functionCode} 失败。{ ex.Message}";
+                    result.Err = $"读取 站号:{stationNumber} 地址:{address} 功能码:{functionCode} 失败。{ex.Message}";
                 }
             }
             finally
@@ -1027,6 +1026,8 @@ namespace IoTClient.Clients.Modbus
                         .DistinctBy(t => t.Address)
                         .ToDictionary(t => t.Address, t => t.DataType);
                     var tempResult = BatchRead(addressList, stationNumber, functionCode);
+                    result.Requst = tempResult.Requst;
+                    result.Response = tempResult.Response;
                     if (tempResult.IsSucceed)
                     {
                         foreach (var item in tempResult.Value)
@@ -1043,6 +1044,8 @@ namespace IoTClient.Clients.Modbus
                     else
                     {
                         result.SetErrInfo(tempResult);
+                        //如果存在异常，按正确逻辑应该是直接返回失败，不继续往下读取了。因为可能存在通信异常，如果继续往下读，可能会导致更多的异常日志产生，甚至造成系统卡顿等问题。
+                        return result.EndTime();
                     }
                 }
             }
@@ -1116,7 +1119,8 @@ namespace IoTClient.Clients.Modbus
                 }
 
                 var tempResult = Read(minAddress.ToString(), stationNumber, functionCode, Convert.ToUInt16(readLength), false);
-
+                result.Requst = tempResult.Requst;
+                result.Response = tempResult.Response;
                 if (!tempResult.IsSucceed)
                 {
                     result.IsSucceed = tempResult.IsSucceed;
@@ -1212,13 +1216,13 @@ namespace IoTClient.Clients.Modbus
                 if (chenkHead[0] != dataPackage[0] || chenkHead[1] != dataPackage[1])
                 {
                     result.IsSucceed = false;
-                    result.Err = "响应结果校验失败";
+                    result.Err = $"写入 站号:{stationNumber} 地址:{address} 功能码:{functionCode} 失败。响应结果校验失败";
                     socket?.SafeClose();
                 }
                 else if (ModbusHelper.VerifyFunctionCode(functionCode, dataPackage[7]))
                 {
                     result.IsSucceed = false;
-                    result.Err = ModbusHelper.ErrMsg(dataPackage[8]);
+                    result.Err = $"写入 站号:{stationNumber} 地址:{address} 功能码:{functionCode} 失败。{ModbusHelper.ErrMsg(dataPackage[8])}。";
                 }
             }
             catch (SocketException ex)
@@ -1274,13 +1278,13 @@ namespace IoTClient.Clients.Modbus
                 if (chenkHead[0] != dataPackage[0] || chenkHead[1] != dataPackage[1])
                 {
                     result.IsSucceed = false;
-                    result.Err = "响应结果校验失败";
+                    result.Err = $"写入 站号:{stationNumber} 地址:{address} 功能码:{functionCode} 失败。响应结果校验失败";
                     socket?.SafeClose();
                 }
                 else if (ModbusHelper.VerifyFunctionCode(functionCode, dataPackage[7]))
                 {
                     result.IsSucceed = false;
-                    result.Err = ModbusHelper.ErrMsg(dataPackage[8]);
+                    result.Err = $"写入 站号:{stationNumber} 地址:{address} 功能码:{functionCode} 失败。{ModbusHelper.ErrMsg(dataPackage[8])}。";
                 }
             }
             catch (SocketException ex)
@@ -1481,21 +1485,43 @@ namespace IoTClient.Clients.Modbus
             var writeAddress = ushort.Parse(address?.Trim());
             if (plcAddresses) writeAddress = (ushort)(Convert.ToUInt16(address?.Trim().Substring(1)) - 1);
 
-            byte[] buffer = new byte[13 + values.Length];
-            buffer[0] = check?[0] ?? 0x19;
-            buffer[1] = check?[1] ?? 0xB2;//检验信息，用来验证response是否串数据了           
-            buffer[4] = BitConverter.GetBytes(7 + values.Length)[1];
-            buffer[5] = BitConverter.GetBytes(7 + values.Length)[0];//表示的是header handle后面还有多长的字节
+            if (functionCode == 16)
+            {
+                byte[] buffer = new byte[13 + values.Length];
+                buffer[0] = check?[0] ?? 0x19;
+                buffer[1] = check?[1] ?? 0xB2;//检验信息，用来验证response是否串数据了           
+                buffer[4] = BitConverter.GetBytes(7 + values.Length)[1];
+                buffer[5] = BitConverter.GetBytes(7 + values.Length)[0];//表示的是header handle后面还有多长的字节
 
-            buffer[6] = stationNumber; //站号
-            buffer[7] = functionCode;  //功能码
-            buffer[8] = BitConverter.GetBytes(writeAddress)[1];
-            buffer[9] = BitConverter.GetBytes(writeAddress)[0];//寄存器地址
-            buffer[10] = (byte)(values.Length / 2 / 256);
-            buffer[11] = (byte)(values.Length / 2 % 256);//写寄存器数量(除2是两个字节一个寄存器，寄存器16位。除以256是byte最大存储255。)              
-            buffer[12] = (byte)(values.Length);          //写字节的个数
-            values.CopyTo(buffer, 13);                   //把目标值附加到数组后面
-            return buffer;
+                buffer[6] = stationNumber; //站号
+                buffer[7] = functionCode;  //功能码
+                buffer[8] = BitConverter.GetBytes(writeAddress)[1];
+                buffer[9] = BitConverter.GetBytes(writeAddress)[0];//寄存器地址
+                buffer[10] = (byte)(values.Length / 2 / 256);
+                buffer[11] = (byte)(values.Length / 2 % 256);//写寄存器数量(除2是两个字节一个寄存器，寄存器16位。除以256是byte最大存储255。)              
+                buffer[12] = (byte)(values.Length);          //写字节的个数
+                values.CopyTo(buffer, 13);                   //把目标值附加到数组后面
+                return buffer;
+            }
+            else if (functionCode == 06)
+            {
+                byte[] buffer = new byte[10 + values.Length];
+                buffer[0] = check?[0] ?? 0x19;
+                buffer[1] = check?[1] ?? 0xB2;//检验信息，用来验证response是否串数据了           
+                buffer[4] = BitConverter.GetBytes(4 + values.Length)[1];
+                buffer[5] = BitConverter.GetBytes(4 + values.Length)[0];//表示的是header handle后面还有多长的字节
+
+                buffer[6] = stationNumber; //站号
+                buffer[7] = functionCode;  //功能码
+                buffer[8] = BitConverter.GetBytes(writeAddress)[1];
+                buffer[9] = BitConverter.GetBytes(writeAddress)[0];//寄存器地址
+                //buffer[10] = (byte)(values.Length / 2 / 256);
+                //buffer[11] = (byte)(values.Length / 2 % 256);//写寄存器数量(除2是两个字节一个寄存器，寄存器16位。除以256是byte最大存储255。)              
+                //buffer[12] = (byte)(values.Length);          //写字节的个数
+                values.CopyTo(buffer, 10);                   //把目标值附加到数组后面
+                return buffer;
+            }
+            return null;
         }
 
         /// <summary>
