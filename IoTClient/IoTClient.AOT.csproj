@@ -21,7 +21,7 @@
 		<GenerateDocumentationFile>False</GenerateDocumentationFile>
 		<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
 		<PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
-		<VersionPrefix>1.0.1</VersionPrefix>
+		<VersionPrefix>1.0.2</VersionPrefix>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
